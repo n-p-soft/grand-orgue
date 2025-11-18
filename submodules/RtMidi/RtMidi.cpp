@@ -5371,10 +5371,17 @@ MidiInDirect :: ~MidiInDirect()
   delete data;
 }
 
+static inline void tsleep ()
+{
+  struct timespec wts;
+  wts.tv_sec = 0;
+  wts.tv_nsec = 200000;
+  nanosleep( &wts, NULL );
+}
+
 static void *directMidiHandler( void *ptr )
 {
   struct timespec ts;
-  struct timespec wts;
   MidiInApi::RtMidiInData *data = static_cast<MidiInApi::RtMidiInData *> (ptr);
   DirectMidiData *apiData = static_cast<DirectMidiData *> (data->apiData);
   RtMidiIn::RtMidiCallback callback = (RtMidiIn::RtMidiCallback)
@@ -5387,24 +5394,25 @@ static void *directMidiHandler( void *ptr )
   MidiFrame *mf;
   static const unsigned char to_skip[] = { 0xfe, 0 };
 
-  wts.tv_sec = 0;
-  wts.tv_nsec = 1000000;
   reader = new MidiReader (MIDIR_EXPAND, to_skip);
   reader->addSource (apiData->fdPort, 0);
 
   while (apiData->fdPort > -1) {
     if ( ! data->doInput) {
-      nanosleep( &wts, NULL );
+      tsleep ();
       continue;
     }
 
-    if ( ! reader->update ())
+    if (reader->update ())
+      mf = reader->getNext ();
+    else
+      mf = NULL;
+    if (mf == NULL) {
+      tsleep ();
       continue;
+    }
 
-    mf = reader->getNext ();
-    if (mf == NULL)
-      continue;
-
+    message.bytes.clear ();
     for (i = 0; i < mf->len; i++)
       message.bytes.push_back( mf->data[i] );
 
@@ -5415,10 +5423,9 @@ static void *directMidiHandler( void *ptr )
       message.timeStamp = 0.0;
       data->firstMessage = false;
     }
-    else {
+    else
       message.timeStamp = (double) ( timestamp - lastTime ) * 0.001;
-      lastTime = timestamp;
-    }
+    lastTime = timestamp;
 
     // Send message
     if ( data->usingCallback )
