@@ -127,12 +127,6 @@ MidiReader::clearQueue ()
 	midi_reader_clear_queue (&this->reader);
 }
 
-bool
-MidiReader::expandFrame (MidiFrame& frame)
-{
-	return (midi_frame_expand_running (&frame));
-}
-
 int
 MidiReader::inject (MidiFrame& frame)
 {

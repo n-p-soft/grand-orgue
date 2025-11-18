@@ -122,12 +122,6 @@ class MidiReader
 	/* Remove all recorded frames. */
 	void clearQueue ();
 
-	/* Expand given MIDI frame if it is a running status one. May return
-	 * false on error, for example if there was not enough room available
-	 * in the frame (but this should not occur often).
- 	*/
-	static bool expandFrame (MidiFrame& frame);
-
 	/* Inject a MIDI frame that will be processed immediately.
 	 * Beware that the frame will appear when calling "getNext" and thru
 	 * the user callback, if any.
