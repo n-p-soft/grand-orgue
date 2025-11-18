@@ -5388,8 +5388,7 @@ static void *directMidiHandler( void *ptr )
                                         data->userCallback;
   MidiInApi::MidiMessage message;
   uint64_t timestamp, lastTime;
-  unsigned char buf[32];
-  int i, r;
+  int i;
   MidiReader *reader;
   MidiFrame *mf;
   static const unsigned char to_skip[] = { 0xfe, 0 };
