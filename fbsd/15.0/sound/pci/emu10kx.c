@@ -508,7 +508,7 @@ static struct emu_hwinfo emu_cards[] = {
 	{0x1102, 0x0004, 0x1102, 0x0058, "SB0090", "Audigy Player/OEM", HAS_AC97 | HAS_51 | IS_EMU10K2},
 
 	/* 0x1002..0x1009 5.1 CA0102-IAT cards */
-	{0x1102, 0x0004, 0x1102, 0x1002, "SB????", "Audigy 2 Platinum", HAS_51 | IS_CA0102},
+	{0x1102, 0x0004, 0x1102, 0x1002, "SB????", "Audigy 2 Platinum", HAS_AC97 | HAS_51 | IS_CA0102},
 	{0x1102, 0x0004, 0x1102, 0x1005, "SB????", "Audigy 2 Platinum EX", HAS_51 | IS_CA0102},
 	{0x1102, 0x0004, 0x1102, 0x1007, "SB0240", "Audigy 2", HAS_AC97 | HAS_51 | IS_CA0102},
 
