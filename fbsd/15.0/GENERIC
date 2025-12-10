@@ -71,7 +71,7 @@ options 	EFIRT			# EFI Runtime Services support
 options 	COMPAT_FREEBSD13	# Compatible with FreeBSD13
 options 	COMPAT_FREEBSD14	# Compatible with FreeBSD14
 options 	SCSI_DELAY=5000		# Delay (in ms) before probing SCSI
-options 	KTRACE			# ktrace(1) support
+#options 	KTRACE			# ktrace(1) support
 options 	STACK			# stack(9) support
 options 	SYSVSHM			# SYSV-style shared memory
 options 	SYSVMSG			# SYSV-style message queues
@@ -95,8 +95,6 @@ options 	RCTL			# Resource limits
 # Debugging support.  Always need this:
 options 	KDB			# Enable kernel debugger support.
 options 	KDB_TRACE		# Print a stack trace for a panic.
-# For full debugger support use (turn off in stable branch):
-include "std.debug"
 
 # Kernel dump features.
 options 	EKCD			# Support for encrypted kernel dumps
@@ -138,19 +136,19 @@ device		mvs			# Marvell 88SX50XX/88SX60XX/88SX70XX/SoC SATA
 device		siis			# SiliconImage SiI3124/SiI3132/SiI3531 SATA
 
 # SCSI Controllers
-#device		ahc			# AHA2940 and onboard AIC7xxx devices
-#device		ahd			# AHA39320/29320 and onboard AIC79xx devices
-#device		hptiop			# Highpoint RocketRaid 3xxx series
-#device		isp			# Qlogic family
+device		ahc			# AHA2940 and onboard AIC7xxx devices
+device		ahd			# AHA39320/29320 and onboard AIC79xx devices
+device		hptiop			# Highpoint RocketRaid 3xxx series
+device		isp			# Qlogic family
 #device		ispfw			# Firmware for QLogic HBAs- normally a module
-#device		mpt			# LSI-Logic MPT-Fusion
-#device		mps			# LSI-Logic MPT-Fusion 2
-#device		mpr			# LSI-Logic MPT-Fusion 3
-#device		mpi3mr			# LSI-Logic MPT-Fusion 4
-#device		sym			# NCR/Symbios Logic
-#device		isci			# Intel C600 SAS controller
-#device		ocs_fc			# Emulex FC adapters
-#device		pvscsi			# VMware PVSCSI
+device		mpt			# LSI-Logic MPT-Fusion
+device		mps			# LSI-Logic MPT-Fusion 2
+device		mpr			# LSI-Logic MPT-Fusion 3
+device		mpi3mr			# LSI-Logic MPT-Fusion 4
+device		sym			# NCR/Symbios Logic
+device		isci			# Intel C600 SAS controller
+device		ocs_fc			# Emulex FC adapters
+device		pvscsi			# VMware PVSCSI
 
 # ATA/SCSI peripherals
 device		scbus			# SCSI bus (required for ATA/SCSI)
@@ -163,32 +161,32 @@ device		ses			# Enclosure Services (SES and SAF-TE)
 #device		ctl			# CAM Target Layer
 
 # RAID controllers interfaced to the SCSI subsystem
-#device		arcmsr			# Areca SATA II RAID
-#device		ciss			# Compaq Smart RAID 5*
-#device		ips			# IBM (Adaptec) ServeRAID
-#device		smartpqi		# Microsemi smartpqi driver
-#device		tws			# LSI 3ware 9750 SATA+SAS 6Gb/s RAID controller
+device		arcmsr			# Areca SATA II RAID
+device		ciss			# Compaq Smart RAID 5*
+device		ips			# IBM (Adaptec) ServeRAID
+device		smartpqi		# Microsemi smartpqi driver
+device		tws			# LSI 3ware 9750 SATA+SAS 6Gb/s RAID controller
 
 # RAID controllers
-#device		aac			# Adaptec FSA RAID
-#device		aacp			# SCSI passthrough for aac (requires CAM)
-#device		aacraid			# Adaptec by PMC RAID
-#device		ida			# Compaq Smart RAID
-#device		mfi			# LSI MegaRAID SAS
-#device		mlx			# Mylex DAC960 family
-#device		mrsas			# LSI/Avago MegaRAID SAS/SATA, 6Gb/s and 12Gb/s
+device		aac			# Adaptec FSA RAID
+device		aacp			# SCSI passthrough for aac (requires CAM)
+device		aacraid			# Adaptec by PMC RAID
+device		ida			# Compaq Smart RAID
+device		mfi			# LSI MegaRAID SAS
+device		mlx			# Mylex DAC960 family
+device		mrsas			# LSI/Avago MegaRAID SAS/SATA, 6Gb/s and 12Gb/s
 #XXX pointer/int warnings
 #device		pst			# Promise Supertrak SX6000
 
 # NVM Express (NVMe) support
-#device		nvme			# base NVMe driver
-#device		nvd			# expose NVMe namespaces as disks, depends on nvme
+device		nvme			# base NVMe driver
+device		nvd			# expose NVMe namespaces as disks, depends on nvme
 
 # Universal Flash Storage Host Controller Interface support
-#device 		ufshci			# UFS host controller
+device 		ufshci			# UFS host controller
 
 # Intel Volume Management Device (VMD) support
-#device		vmd
+device		vmd
 
 # atkbdc0 controls both the keyboard and the PS/2 mouse
 device		atkbdc			# AT keyboard controller
@@ -212,8 +210,8 @@ device		vt_vbefb
 device		agp			# support several AGP chipsets
 
 # CardBus bridge support
-#device		cbb			# CardBus (yenta) bridge
-#device		cardbus			# CardBus (32-bit) bus
+device		cbb			# CardBus (yenta) bridge
+device		cardbus			# CardBus (32-bit) bus
 
 # Serial (COM) ports
 device		uart			# Generic UART driver
@@ -240,9 +238,9 @@ device		vmx			# VMware VMXNET3 Ethernet
 device		axp			# AMD EPYC integrated NIC (requires miibus)
 
 # PCI Ethernet NICs.
-#device		bxe			# Broadcom NetXtreme II BCM5771X/BCM578XX 10GbE
-#device		le			# AMD Am7900 LANCE and Am79C9xx PCnet
-#device		ti			# Alteon Networks Tigon I/II gigabit Ethernet
+device		bxe			# Broadcom NetXtreme II BCM5771X/BCM578XX 10GbE
+device		le			# AMD Am7900 LANCE and Am79C9xx PCnet
+device		ti			# Alteon Networks Tigon I/II gigabit Ethernet
 
 # Nvidia/Mellanox Connect-X 4 and later, Ethernet only
 #  o requires COMPAT_LINUXKPI and xz(4)
@@ -271,8 +269,8 @@ device		lge			# Level 1 LXT1001 gigabit Ethernet
 device		msk			# Marvell/SysKonnect Yukon II Gigabit Ethernet
 device		nfe			# nVidia nForce MCP on-board Ethernet
 device		nge			# NatSemi DP83820 gigabit Ethernet
-device		re			# Realtek 8139C+/8169/8169S/8110S
-device		rl			# Realtek 8129/8139
+device		re			# RealTek 8139C+/8169/8169S/8110S
+device		rl			# RealTek 8129/8139
 device		sge			# Silicon Integrated Systems SiS190/191
 device		sis			# Silicon Integrated Systems SiS 900/SiS 7016
 device		sk			# SysKonnect SK-984x & SK-982x gigabit Ethernet
@@ -309,6 +307,8 @@ device		wpi			# Intel 3945ABG wireless NICs.
 device		crypto			# core crypto support
 device		aesni			# AES-NI OpenCrypto module
 device		loop			# Network loopback
+device		padlock_rng		# VIA Padlock RNG
+device		rdrand_rng		# Intel Bull Mountain RNG
 device		ether			# Ethernet support
 device		vlan			# 802.1Q VLAN support
 device		tuntap			# Packet tunnel.
@@ -321,10 +321,6 @@ device		xz			# lzma decompression
 # Be aware of the administrative consequences of enabling this!
 # Note that 'bpf' is required for DHCP.
 device		bpf			# Berkeley packet filter
-
-# random(4)
-device		rdrand_rng		# Intel Bull Mountain RNG
-device		tpm			# Trusted Platform Module
 
 # USB support
 options 	USB_DEBUG		# enable debug msgs
@@ -376,7 +372,7 @@ device		sdhci			# Generic PCI SD Host Controller
 #device		xentimer		# Xen x86 PV timer device
 
 # Netmap provides direct access to TX/RX rings on supported NICs
-#device		netmap			# netmap(4) support
+device		netmap			# netmap(4) support
 
 # evdev interface
 options 	EVDEV_SUPPORT		# evdev support in legacy drivers
@@ -392,5 +388,3 @@ options 	IICHID_SAMPLING		# Workaround missing GPIO INTR support
 # EFI devices
 device		efidev			# EFI pseudo-device
 device		efirtc			# EFI RTC
-
-nooption	ZFS
