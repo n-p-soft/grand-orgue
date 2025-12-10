@@ -1,5 +1,6 @@
 # Copyright 2006 Milan Digital Audio LLC
 # Copyright 2009-2024 GrandOrgue contributors (see AUTHORS)
+# Copyright 2025 Nicolas Provost <dev@nicolas-provost.fr>
 # License GPL-2.0 or later
 # (https://www.gnu.org/licenses/old-licenses/gpl-2.0.html).
 
@@ -54,7 +55,7 @@ option(RTAUDIO_USE_WMME       "Enable RtAudio support for WMME (PortAudio only -
 option(RTAUDIO_USE_WDMKS      "Enable RtAudio support for WDMKS (PortAudio only - Windows only)" OFF)
 option(RTAUDIO_USE_WASAPI     "Enable RtAudio support for WASAPI (PortAudio only - Windows only)" OFF)
 option(RTMIDI_USE_CORE        "Enable RtMidi support for Core Audio (OS X only)" OFF)
-option(RTMIDI_USE_JACK        "Enable RtMidi support for Jack" ON)
+option(RTMIDI_USE_JACK        "Enable RtMidi support for Jack" OFF)
 option(RTMIDI_USE_ALSA        "Enable RtMidi support for ALSA (Linux only)" OFF)
 option(RTMIDI_USE_MM          "Enable RtMidi support for MM (Windows only)" OFF)
 option(RTMIDI_USE_DIRECT      "Enable RtMidi support for Direct API" ON)
