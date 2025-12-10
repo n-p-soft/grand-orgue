@@ -6,9 +6,11 @@ This is a port of the church-organ sample-based simulator "GrandOrgue" v3.14.2 f
 
 License: GPL2 and later.
 
-## Current status (2025/11/18): demo organ is working normally
+## Current status
 
 The sound rendering part of the software and the user interface are working fine. The MIDI part is now working, using our custom version of RtMidi only.
+
+The demo sample set is fully usable.
 
 ![screenshot](resources/fbsd.png)
 
@@ -28,7 +30,7 @@ So you cannot have, for example, one soundcard supported natively and one other 
 
 Furthermore, if your hardware is only supported by OSS, you need to recompile the FreeBSD kernel such that the module "sound" is not statically linked to the kernel. You will then be able to choose between the native sound framework (main module is "sound") and the OSS one (main module is "osscore").
 
-Note that the large church-organs with multiple channels may require up to 128GB of RAM to work. For smallest ones with 16-bit samples, 4GB may be sufficient. Conversely, more CPU cores are better. To store these organs, you will also need some space on your hard-drive; any kind church organ may add about 5-10 GB of data for the sample set itself and the cache.
+Note that the large church-organs with multiple channels may require up to 128GB of RAM to work. For smallest ones with 16-bit samples, 4GB may be sufficient. Likewise, more CPU cores is better. To store these organs, you will also need some space on your hard-drive; any kind church organ may add about 5-10 GB of data for the sample set itself and the cache.
 
 ### MIDI
 
