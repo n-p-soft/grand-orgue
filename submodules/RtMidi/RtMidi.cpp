@@ -5456,7 +5456,7 @@ void MidiInDirect :: openPort( unsigned int portNumber, const std::string &portN
     error( RtMidiError::INVALID_PARAMETER, errorString_ );
   }
   else {
-    fd = open( buf, O_RDONLY);
+    fd = open( buf, O_RDONLY | O_NONBLOCK );
     if (fd < 0) {
       errorString_ = "MidiInDirect::openPort: unable to open port";
       error( RtMidiError::SYSTEM_ERROR, errorString_ );
@@ -5633,7 +5633,7 @@ void MidiOutDirect :: openPort( unsigned int portNumber, const std::string &port
     error( RtMidiError::INVALID_PARAMETER, errorString_ );
   }
   else {
-    int fd = open( buf, O_RDONLY);
+    int fd = open( buf, O_WRONLY);
 
     if (fd < 0) {
       errorString_ = "MidiInDirect::openPort: unable to open port";
