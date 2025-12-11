@@ -48,9 +48,9 @@ Your soundcard may have a game/MIDI port but you will not be able to use it beca
 
 I recently switched to FreeBSD 15.0, which was released on 4, December 2025.
 
-I made some pull requests to enable the support of MIDI on PCI sound cards in FreeBSD. I hope this work will be integrated into FreeBSD 15.1; see the "freebsd-src" git repository on my Github account: branches "mpu-init" + "midi-poll" + "midi-locks" + "midi-emu10kx". For now, you have to use one MIDI-to-USB adapter, unless you want to compile a custom Kernel after applying these patches, as explained below.
+I made some pull requests to enable the support of MIDI on PCI sound cards in FreeBSD. I hope this work will be integrated into FreeBSD 15.1; see the [freebsd-src/midi-all repository on my Github account](https://github.com/n-p-soft/freebsd-src/midi-all/sys/dev/sound/midi). For now, unless you want to compile a custom Kernel after applying these patches, as explained below, you can use one USB-to-MIDI adapter.
 
-### FreeBSD 15 kernel with MIDI support for PCI cards
+### Building FreeBSD 15.0 with MIDI support for PCI cards
 
 In the directory "fbsd/15.0" of this repository, you will find the patched files needed to build a FreeBSD 15.0 kernel with MIDI support for PCI cards. To build the kernel on amd64, assuming the FreeBSD sources are stored under /usr/src, run:
 
