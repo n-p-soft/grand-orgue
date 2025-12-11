@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  *
  * Copyright (c) 2003 Mathew Kanner
- * Copyright (c) 2025 Nicolas Provost
+ * Copyright (c) 2025 Nicolas Provost (25-12-11a)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -77,7 +77,6 @@ static int mpu401_muninit(struct snd_midi *, void *);
 static int mpu401_minqsize(struct snd_midi *, void *);
 static int mpu401_moutqsize(struct snd_midi *, void *);
 static void mpu401_mcallback(struct snd_midi *, void *, int);
-static void mpu401_mcallbackp(struct snd_midi *, void *, int);
 
 static kobj_method_t mpu401_methods[] = {
 	KOBJMETHOD(mpu_init, mpu401_minit),
@@ -85,7 +84,6 @@ static kobj_method_t mpu401_methods[] = {
 	KOBJMETHOD(mpu_inqsize, mpu401_minqsize),
 	KOBJMETHOD(mpu_outqsize, mpu401_moutqsize),
 	KOBJMETHOD(mpu_callback, mpu401_mcallback),
-	KOBJMETHOD(mpu_callbackp, mpu401_mcallbackp),
 	KOBJMETHOD_END
 };
 
@@ -105,10 +103,14 @@ mpu401_waitfortx(struct mpu401 *m)
 	for (i = 0; i < MPU_TRYDATA; i++) {
 		if (TXRDY(m))
 			return (1);
-		else if (RXRDY(m))
+		else if (RXRDY(m)) {
+			/*
+			 * We're initializing: discard input data, if any.
+			 */
 			(void) READ(m);
-		else
+		} else {
 			mpu401_pause();
+		}
 	}
 	return (0);
 }
@@ -121,15 +123,19 @@ mpu401_waitforack(struct mpu401 *m)
 	for (i = 0; i < MPU_TRYDATA; i++) {
 		if (RXRDY(m) && READ(m) == MPU_ACK)
 			return (1);
-		else
+		else {
 			mpu401_pause();
+		}
 	}
 	return (0);
 }
 
-/* Some cards only support UART mode but others will start in
- * "Intelligent" mode, so we must try to switch to UART mode.
- * Cheap cards may not even have a COMMAND register..
+/*
+ * Some cards only support UART mode but others may start in "Intelligent"
+ * mode; in this case, we must switch to UART mode to use raw bytes instead
+ * of getting altered MIDI sequences.
+ * Old cards may not even have a COMMAND register to do the switch, but there
+ * is no such card in the FreeBSD tree.
  * Returns 0 if we're not sure of the MPU state.
  */
 static int
@@ -137,23 +143,34 @@ mpu401_setup(struct mpu401 *m)
 {
 	int res;
 
-	/* first, we try to send a reset and get back one ACK */
+	/*
+	 * First, we try to send a reset and get back one ACK.
+	 */
 	if (mpu401_waitfortx(m)) {
 		CMD(m, MPU_RESET);
 		if (mpu401_waitforack(m)) {
-			/* ok, send UART command (we can also try on timeout) */
+			/*
+			 * Ok, send the UART command (we can try even on
+			 * timeout).
+			 */
 			mpu401_waitfortx(m);
 			CMD(m, MPU_UART);
 			res = mpu401_waitforack(m);
 			printf("mpu401: %s mode\n", res ? "UART" : "unknown");
+		} else {
+			/*
+			 * For example, this may be the case when reloading a
+			 * driver.  But no way to know exactly.
+			 */
+			printf("mpu401: no ack, device may already be in "
+				"UART mode\n");
 		}
-		else
-			printf("mpu401: no ack, device may already be in UART mode\n");
 		return (1);
-	}
-	else {
-		/* may be a UART-only card */
-		printf("mpu401: UART mode may not be enabled\n");
+	} else {
+		/*
+		 * Failure, the card seems to no accept any command.
+		 */
+		printf("mpu401: cannot enable UART mode\n");
 		return (0);
 	}
 }
@@ -164,22 +181,23 @@ mpu401_intr(struct mpu401 *m)
 	uint8_t b;
 	int i;
 
-	/* Read and buffer all input bytes, then send data.
-	 * Note that pending input may inhibits data sending.
-	 * Spurious cards may also be sticky, so limit the count of tries
-	 * (probably MPU cards have no more than 16 bytes as internal buffer).
+	/*
+	 * Read and buffer all input bytes, then send data.
+	 * Note that pending input may inhibit data sending.
+	 * XXX: ideally, we should ensure the input queue of the midi device,
+	 * in the midi_in function, has some room available before reading
+	 * anything, else we're leaking bytes.
 	 */
 	for (i = 0; RXRDY(m) && i < MPU_INTR_BUF; i++) {
-		/* XXX we should check midi_in has room in its buffer, else
-		 * we're missing a byte */
 		b = READ(m);
 		midi_in(m->mid, &b, 1);
 	}
 	for (i = 0; TXRDY(m) && i < MPU_INTR_BUF; i++) {
 		if (midi_out(m->mid, &b, 1))
 			WRITE(m, b);
-		else
+		else {
 			return (0);
+		}
 	}
 	return (m->flags & M_TXEN) == M_TXEN;
 }
@@ -205,13 +223,17 @@ mpu401_init(kobj_class_t cls, void *cookie, driver_intr_t softintr,
 	if (!m->mid)
 		goto err;
 	*cb = mpu401_intr;
-	/* Setting up the MPU in UART mode must be done before the interrupt
+	/*
+	 * Setting up the MPU in UART mode must be done before the interrupt
 	 * handler is enabled by the caller, else we may miss the ACK, which
-	 * is read back from the data port of the MPU. */
+	 * is read back from the data port of the MPU.
+	 */
 	if (mpu401_setup(m) == 0) {
-		/* We don't know the exact state of the device, or device is not
-		 * responsive. */
-		goto err;	
+		/*
+		 * We don't know the exact state of the device, or the device
+		 * is not responsive.
+		 */
+		goto err;
 	}
 	return (m);
 err:
@@ -236,8 +258,10 @@ mpu401_uninit(struct mpu401 *m)
 static int
 mpu401_minit(struct snd_midi *sm, void *arg)
 {
-	/* hardware init is done in mpu401_init, before the interrupt handler
-	 * is active. */
+	/*
+	 * Hardware init is done in mpu401_init, before the interrupt handler
+	 * is active.
+	 */
 	return (0);
 }
 
@@ -267,10 +291,4 @@ mpu401_mcallback(struct snd_midi *sm, void *arg, int flags)
 	struct mpu401 *m = arg;
 
 	m->flags = flags;
-}
-
-static void
-mpu401_mcallbackp(struct snd_midi *sm, void *arg, int flags)
-{
-	mpu401_mcallback(sm, arg, flags);
 }
